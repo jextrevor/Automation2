@@ -1,9 +1,11 @@
 import os
 import bluetooth
+import time
 from wakeonlan import send_magic_packet
 
 bluetooth_address = os.environ['BLUETOOTH_ADDRESS']
 wol_address = os.environ['WOL_ADDRESS']
+timeout = int(os.environ['TIMEOUT'])
 
 def is_here(addr):
     if bluetooth.lookup_name( addr ) is not None:
@@ -27,5 +29,6 @@ def loop():
         elif old_here is True and here is False:
             old_here = False
             left()
-
+        if here is True:
+            time.sleep(timeout)
 loop()
