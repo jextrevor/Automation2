@@ -2,10 +2,12 @@ import os
 import bluetooth
 import time
 from wakeonlan import send_magic_packet
+from validators import mac_address
 
-bluetooth_address = os.environ['BLUETOOTH_ADDRESS']
-wol_address = os.environ['WOL_ADDRESS']
-timeout = int(os.environ['TIMEOUT'])
+def validateMac(address):
+    if mac_address(address):
+        return address
+    raise ValueError('"'+ address+ '" is not a valid MAC address')
 
 def is_here(addr):
     if bluetooth.lookup_name( addr ) is not None:
@@ -14,7 +16,8 @@ def is_here(addr):
         return False
 
 def arrived():
-    send_magic_packet(wol_address)
+    if wol_address is not None:
+        send_magic_packet(wol_address)
 
 def left():
     pass
@@ -31,4 +34,15 @@ def loop():
             left()
         if here is True:
             time.sleep(timeout)
+
+bluetooth_address = validateMac(os.environ['BLUETOOTH_ADDRESS'])
+try:
+    wol_address = validateMac(os.environ['WOL_ADDRESS'])
+except KeyError:
+    wol_address = None
+try:
+    timeout = int(os.environ['TIMEOUT'])
+except KeyError:
+    timeout = 150
+
 loop()
