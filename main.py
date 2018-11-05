@@ -18,6 +18,7 @@ def is_here(addr):
 def arrived():
     if wol_address is not None:
         send_magic_packet(wol_address)
+    #TODO: Add code to play music/give notifications about email
 
 def left():
     pass
